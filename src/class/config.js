@@ -109,6 +109,26 @@
         return this[internalName]
       }
     },
+    makeInitGetter: function () {
+      var name = this.name
+      var names = this.names
+      var setName = names.set
+      var getName = names.get
+      var initializingName = names.initializing
+
+      return function () {
+        var me = this
+
+        me[initializingName] = true
+        // Remove the initGetter from the instance now that the value has been set.
+        delete me[getName]
+
+        me[setName](me.config[name])
+        delete me[initializingName]
+
+        return me[getName].apply(me, arguments)
+      }
+    },
 
     makeSetter: function () {
       var name = this.name

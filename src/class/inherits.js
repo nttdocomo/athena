@@ -31,7 +31,6 @@
   }
 
 }(this, function factory(_) {
-	var initializing = false
 	var unImplementedSuper = function(method){throw "Super does not implement this method: " + method;};
 
   var fnTest = /\b_super\b/;
@@ -64,57 +63,51 @@
     return wrapper;
   };
 
-	var ctor = function(){
-		if (!initializing && this.init){
-			this.init.apply(this, arguments);
-		}
-	}, inherits = function(parent, protoProps, staticProps) {
-		initializing = true;
+  var ctor = function(){}, inherits = function(parent, protoProps, staticProps) {
     var child, parentProto = parent.prototype;
 
-		// The constructor function for the new subclass is either defined by you
-		// (the "constructor" property in your `extend` definition), or defaulted
-		// by us to simply call the parent's constructor.
-		if (protoProps && protoProps.hasOwnProperty('constructor')) {
-			child = protoProps.constructor;
-		} else {
-			child = function(){ return parent.apply(this, arguments); };
-		}
+    // The constructor function for the new subclass is either defined by you
+    // (the "constructor" property in your `extend` definition), or defaulted
+    // by us to simply call the parent's constructor.
+    if (protoProps && protoProps.hasOwnProperty('constructor')) {
+        child = protoProps.constructor;
+    } else {
+        child = function(){ return parent.apply(this, arguments); };
+    }
 
-		// Inherit class (static) properties from parent.
-		_.extend(child, parent, staticProps);
+    // Inherit class (static) properties from parent.
+    _.extend(child, parent, staticProps);
 
-		// Set the prototype chain to inherit from `parent`, without calling
-		// `parent`'s constructor function.
-		ctor.prototype = parentProto;
-		child.prototype = new ctor();
-    initializing = false;
+    // Set the prototype chain to inherit from `parent`, without calling
+    // `parent`'s constructor function.
+    ctor.prototype = parentProto;
+    child.prototype = new ctor();
 
-		// Add prototype properties (instance properties) to the subclass,
-		// if supplied.
-		if (protoProps) {
-			_.extend(child.prototype, protoProps);
+    // Add prototype properties (instance properties) to the subclass,
+    // if supplied.
+    if (protoProps) {
+        _.extend(child.prototype, protoProps);
 
-			// Copy the properties over onto the new prototype
-			for (var name in protoProps) {
-				// Check if we're overwriting an existing function
-				if (typeof protoProps[name] == "function" && fnTest.test(protoProps[name])) {
-					child.prototype[name] = makeWrapper(parentProto, name, protoProps[name]);
-				}
-			}
-		}
+        // Copy the properties over onto the new prototype
+        for (var name in protoProps) {
+            // Check if we're overwriting an existing function
+            if (typeof protoProps[name] == "function" && fnTest.test(protoProps[name])) {
+                child.prototype[name] = makeWrapper(parentProto, name, protoProps[name]);
+            }
+        }
+    }
 
-		// Add static properties to the constructor function, if supplied.
-		if (staticProps) _.extend(child, staticProps);
+    // Add static properties to the constructor function, if supplied.
+    if (staticProps) _.extend(child, staticProps);
 
-		// Correctly set child's `prototype.constructor`.
-		child.prototype.constructor = child;
+    // Correctly set child's `prototype.constructor`.
+    child.prototype.constructor = child;
 
-		// Set a convenience property in case the parent's prototype is needed later.
-		child.__super__ = parentProto;
+    // Set a convenience property in case the parent's prototype is needed later.
+    child.__super__ = parentProto;
 
-		return child;
-	};
+    return child;
+  };
 
-	return inherits;
+  return inherits;
 }));
