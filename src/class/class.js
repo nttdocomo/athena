@@ -44,13 +44,14 @@
       }*/
       var Cls = Parent.extend(_.omit(data, 'config', 'statics'))
       _.extend(Cls, Base, data['statics'])
+      //Cls.getConfigurator();
       if(className){
         Cls.$className = className
       }
       return Cls
     },
         
-    doProcess: function(Cls, data) {
+    doProcess: function(Cls, data, hooks) {
       var me = this
       var preprocessors = _.map(me.preprocessors, function(preprocessor){
         return preprocessor.fn
@@ -64,10 +65,26 @@
               return;
           }
       }
-      //hooks.onBeforeCreated.apply(me, arguments);
+      hooks.onBeforeCreated.apply(me, arguments);
+    },
+    onBeforeCreated: function(Class, data, hooks) {
+      //<debug>
+      //Ext.classSystemMonitor && Ext.classSystemMonitor(Class, '>> Ext.Class#onBeforeCreated', arguments);
+      //</debug>
+  
+      Class.addMembers(data);
+
+      //hooks.onCreated.call(Class, Class);
+
+      //<debug>
+      //Ext.classSystemMonitor && Ext.classSystemMonitor(Class, '<< Ext.Class#onBeforeCreated', arguments);
+      //</debug>
     },
     process: function(Cls, data) {
-      this.doProcess(Cls, data);
+      var hooks = {
+        onBeforeCreated: this.onBeforeCreated
+      }
+      this.doProcess(Cls, data, hooks);
     },
     preprocessors: {},
     registerPreprocessor: function(name, fn) {

@@ -22,7 +22,45 @@
     root.Class = factory()
   }
 }(this, function (Class, Configurator, onBeforeCreated, _, Athena) {
-  var Base = Class.extend()
+  var Base = Class.extend({
+    //<feature classSystem.config>
+    /**
+     * Initialize configuration for this class. a typical example:
+     *
+     *     Ext.define('My.awesome.Class', {
+     *         // The default config
+     *         config: {
+     *             name: 'Awesome',
+     *             isAwesome: true
+     *         },
+     *
+     *         constructor: function(config) {
+     *             this.initConfig(config);
+     *         }
+     *     });
+     *
+     *     var awesome = new My.awesome.Class({
+     *         name: 'Super Awesome'
+     *     });
+     *
+     *     alert(awesome.getName()); // 'Super Awesome'
+     *
+     * @protected
+     * @param {Object} instanceConfig
+     * @return {Ext.Base} this
+     * @chainable
+     */
+    initConfig: function(instanceConfig) {
+      var me = this
+      var cfg = me.constructor.getConfigurator()
+
+      me.initConfig = Athena.emptyFn // ignore subsequent calls to initConfig
+      me.initialConfig = instanceConfig || {}
+      cfg.configure(me, instanceConfig)
+
+      return me;
+    }
+  })
   _.extend(Base, {
     addConfig: function(config, mixinClass) {
       var cfg = this.$config || this.getConfigurator()

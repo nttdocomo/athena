@@ -33,6 +33,7 @@
   })
   var a = new A()
   var B = define('B', A, {
+    a:2,
   	config: {
   		b:2
   	},
@@ -52,6 +53,7 @@
       assert.strictEqual(B.b, '2', 'B的b静态属性值为"2"' )
       assert.strictEqual(a.a, 1, 'a的a属性值为1' )
       assert.strictEqual(b.b, 2, 'b的b属性值为2' )
+      assert.strictEqual(b.getA(), 2, 'b的getB方法返回值为2' )
     });
   };
   return {run: run}
